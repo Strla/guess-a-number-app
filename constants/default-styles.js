@@ -1,5 +1,4 @@
-import { Platform, StyleSheet } from "react-native";
-import Colors from "./colors";
+import { StyleSheet } from "react-native";
 
 export default StyleSheet.create({
   bodyText: {
@@ -8,6 +7,5 @@ export default StyleSheet.create({
   title: {
     fontFamily: "open-sans-bold",
     fontSize: 18,
-    color: Platform.OS === "ios" ? Colors.primary : "white",
   },
 });

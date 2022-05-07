@@ -1,83 +1,61 @@
-import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  Dimensions,
-  ScrollView,
-} from "react-native";
-import DefaultStyles from "../constants/default-styles";
-import Colors from "../constants/colors";
+import React from "react";
+import { View, Text, StyleSheet, Image } from "react-native";
 import MainButton from "../components/MainButton";
+import Colors from "../constants/colors";
+import DefaultStyles from "../constants/default-styles";
 
 const GameOverScreen = (props) => {
-  const [availableDeviceWidth, setAvailableDeviceWidth] = useState(
-    Dimensions.get("window").width
-  );
-  const [availableDeviceHeight, setAvailableDeviceHeight] = useState(
-    Dimensions.get("window").height
-  );
-
-  useEffect(() => {
-    const updateLayout = () => {
-      setAvailableDeviceWidth(Dimensions.get("window").width);
-      setAvailableDeviceHeight(Dimensions.get("window").height);
-    };
-
-    Dimensions.addEventListener("change", updateLayout);
-
-    return () => {
-      Dimensions.removeEventListener("change", updateLayout);
-    };
-  });
-
   return (
-    <ScrollView>
-      <View style={styles.screen}>
-        <Text style={DefaultStyles.title}>The Game is Over!</Text>
-
-        <View
-          style={{
-            ...styles.imageContainer,
-            ...{
-              width: availableDeviceWidth * 0.7,
-              height: availableDeviceWidth * 0.7,
-              borderRadius: (availableDeviceWidth * 0.7) / 2,
-              marginVertical: availableDeviceHeight / 30,
-            },
-          }}
-        >
-          <Image
-            style={styles.image}
-            source={require("../assets/success.png")}
-            resizeMode="cover"
-          />
-        </View>
-
-        <View
-          style={{
-            ...styles.resultContainer,
-            ...{ marginVertical: availableDeviceHeight / 60 },
-          }}
-        >
-          <Text
-            style={{
-              ...styles.resultText,
-              ...{ fontSize: availableDeviceHeight < 400 ? 16 : 20 },
-            }}
-          >
-            Your phone needed{" "}
-            <Text style={styles.highlight}>{props.roundsNumber}</Text> rounds to
-            guess the number{" "}
-            <Text style={styles.highlight}>{props.userNumber}</Text>
+    <View style={styles.screen}>
+      <Text style={DefaultStyles.title}>Igra je gotova!</Text>
+      <View style={styles.imageContainer}>
+        <Image
+          source={require("../assets/success.png")}
+          style={styles.image}
+          resizeMode="cover"
+        />
+      </View>
+      {props.navigation.getParam("genNumber") &&
+      props.navigation.getParam("numOfRounds") ? (
+        <View style={styles.resultContainer}>
+          <Text style={styles.resultText}>
+            Trebalo ti je{" "}
+            <Text style={styles.highlight}>
+              {props.navigation.getParam("numOfRounds")}
+            </Text>{" "}
+            pokušaja da pogodiš broj{" "}
+            <Text style={styles.highlight}>
+              {props.navigation.getParam("genNumber")}
+            </Text>
           </Text>
         </View>
-
-        <MainButton onPress={props.onRestart}>NEW GAME</MainButton>
-      </View>
-    </ScrollView>
+      ) : (
+        <View style={styles.resultContainer}>
+          <Text style={styles.resultText}>
+            Tvojem mobitelu je trebalo{" "}
+            <Text style={styles.highlight}>
+              {props.navigation.getParam("guessLength")}
+            </Text>{" "}
+            pokušaja da pogodi broj{" "}
+            <Text style={styles.highlight}>
+              {props.navigation.getParam("userNumber")}
+            </Text>
+          </Text>
+        </View>
+      )}
+      <MainButton onPress={() => props.navigation.popToTop()}>
+        NOVA IGRA
+      </MainButton>
+    </View>
   );
+};
+
+GameOverScreen.navigationOptions = () => {
+  return {
+    headerLeft: () => null,
+    headerTitle: "Kraj igre",
+    headerTintColor: Colors.primary,
+  };
 };
 
 const styles = StyleSheet.create({
@@ -85,12 +63,15 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    paddingVertical: 10,
   },
   imageContainer: {
+    width: 300,
+    height: 300,
+    borderRadius: 150,
     borderWidth: 3,
     borderColor: "black",
     overflow: "hidden",
+    marginVertical: 30,
   },
   image: {
     width: "100%",
@@ -98,10 +79,11 @@ const styles = StyleSheet.create({
   },
   resultContainer: {
     marginHorizontal: 30,
+    marginVertical: 15,
   },
   resultText: {
-    fontFamily: "open-sans",
     textAlign: "center",
+    fontSize: 20,
   },
   highlight: {
     color: Colors.primary,
